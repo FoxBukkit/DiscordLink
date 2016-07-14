@@ -18,5 +18,5 @@ bot.on('ready', () => {
 		return util.syncMCRolesForUser(member.id, bot)
 		.catch(err => console.error(err, err.stack));
 	})
-	.then(() => process.exit(0));
+	.finally(() => process.exit(0));
 });
