@@ -12,12 +12,10 @@ const bot = Promise.promisifyAll(new Discord.Client({
 	forceFetchUsers: true,
 }));
 
-util._setBot(bot);
-
 bot.loginWithToken(config.botToken);
 bot.on('ready', () => {
 	return Promise.each(bot.servers[0].members, member => {
-		return util.syncMCRolesForUser(member)
+		return util.syncMCRolesForUser(member, bot)
 		.catch(err => console.error(err, err.stack));
 	});
 });

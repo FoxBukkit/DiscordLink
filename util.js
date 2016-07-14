@@ -55,11 +55,11 @@ function getMCRoleForUser (user) {
 }
 module.exports.getMCRoleForUser = getMCRoleForUser;
 
-function syncMCRolesForUser (user) {
+function syncMCRolesForUser (user, _bot) {
 	return getMCRoleForUser(user)
 	.then(redisMCRole => {
 		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
-		const details = bot.servers[0].detailsOfUser(user);
+		const details = (_bot || bot).servers[0].detailsOfUser(user);
 
 		const rolesToRemove = [];
 		const rolesToAdd = [];
@@ -76,7 +76,7 @@ function syncMCRolesForUser (user) {
 			rolesToAdd.push(correctDiscordRole);
 		}
 
-		return bot.manageMemberRolesAsync(user, rolesToAdd, rolesToRemove);
+		return (_bot || bot).manageMemberRolesAsync(user, rolesToAdd, rolesToRemove);
 	});
 }
 module.exports.syncMCRolesForUser = syncMCRolesForUser;
