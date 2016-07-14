@@ -16,9 +16,8 @@ util._setBot(bot);
 
 bot.loginWithToken(config.botToken);
 bot.on('ready', () => {
-	const server = bot.servers[0];
-	server.members.forEach(member => {
-		return util.syncMCRolesForUser(member, server)
+	return Promise.each(bot.servers[0].members, member => {
+		return util.syncMCRolesForUser(member)
 		.catch(err => console.error(err, err.stack));
 	});
 });
