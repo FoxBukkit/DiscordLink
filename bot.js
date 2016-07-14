@@ -7,7 +7,10 @@ const crypto = require('crypto');
 const redis = require('./redis');
 const util = require('./util');
 
-const bot = Promise.promisifyAll(new Discord.Client());
+const bot = Promise.promisifyAll(new Discord.Client(
+	autoReconnect: true,
+	compress: true
+));
 
 let chat;
 
