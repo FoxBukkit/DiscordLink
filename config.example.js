@@ -15,6 +15,20 @@ module.exports = {
 		superadmin: '202947541598339072',
 		doridian: '202947572090929152',
 	},
+	zeromq: {
+		serverToBroker: [
+			{
+				mode: 'connect',
+				uri: 'tcp://127.0.0.1:5557',
+			},
+		],
+		brokerToServer: [
+			{
+				mode: 'connect',
+				uri: 'tcp://127.0.0.1:5558',
+			},
+		],
+	},
 	hashSecret: '[REDACTED]',
 	redis: {
 		host: '127.0.0.1',
