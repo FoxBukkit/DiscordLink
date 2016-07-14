@@ -2,7 +2,7 @@
 
 const config = require('./config');
 const Promise = require('bluebird');
-const Discord = require('discord.js');
+const Discord = require('@doridian/discord.js');
 const crypto = require('crypto');
 const redis = require('./redis');
 const util = require('./util');
@@ -71,4 +71,5 @@ module.exports = {
 	setChat (newChat) {
 		chat = newChat;
 	},
+	bot: bot,
 };

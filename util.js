@@ -15,10 +15,6 @@ for (const i in ROLE_MAPPING) {
 
 let bot;
 
-module.exports._setBot = function (newBot) {
-	bot = newBot;
-};
-
 module.exports.loadZMQConfig = function loadZMQConfig (config, socket) {
 	config.forEach(function (srv) {
 		switch (srv.mode.toLowerCase()) {
@@ -32,11 +28,17 @@ module.exports.loadZMQConfig = function loadZMQConfig (config, socket) {
 	});
 };
 
-module.exports.getMCUUIDForUser = function getMCUUIDForUser (user) {
-	return redis.hgetAsync('discordlinks:discord-to-mc', user.id);
-};
+function getDiscordIDForUser (uuid) {
+	return redis.hgetAsync('discordlinks:mc-to-discord', uuid);
+}
+module.exports.getDiscordIDForUser = getDiscordIDForUser;
 
-module.exports.getMCRoleForUser = function getMCRoleForUser (user) {
+function getMCUUIDForUser (user) {
+	return redis.hgetAsync('discordlinks:discord-to-mc', user.id ? user.id : user);
+}
+module.exports.getMCUUIDForUser = getMCUUIDForUser;
+
+function getMCRoleForUser (user) {
 	return getMCUUIDForUser(user)
 	.then(uuid => {
 		if (uuid) {
@@ -50,15 +52,17 @@ module.exports.getMCRoleForUser = function getMCRoleForUser (user) {
 		}
 		return null;
 	});
-};
+}
+module.exports.getMCRoleForUser = getMCRoleForUser;
 
-module.exports.syncMCRolesForUser = function syncMCRolesForUser (user) {
+function syncMCRolesForUser (user) {
 	return getMCRoleForUser(user)
 	.then(redisMCRole => {
 		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
 		const details = bot.servers[0].detailsOfUser(user);
 
 		const rolesToRemove = [];
+		const rolesToAdd = [];
 		let hasCorrectRole = false;
 		details.roles.forEach(role => {
 			if (role.id === correctDiscordRole) {
@@ -68,22 +72,14 @@ module.exports.syncMCRolesForUser = function syncMCRolesForUser (user) {
 			}
 		});
 
-		let promise = Promise.resolve();
-
 		if (!hasCorrectRole && correctDiscordRole) {
-			promise = promise.then(() =>
-				bot.addMemberToRoleAsync(user, correctDiscordRole));
+			rolesToAdd.push(correctDiscordRole);
 		}
 
-		if (rolesToRemove.length > 0) {
-			promise = promise.then(() =>
-				bot.removeMemberFromRoleAsync(user, rolesToRemove));
-		}
-
-		return promise;
+		return bot.manageMemberRolesAsync(user, rolesToAdd, rolesToRemove);
 	});
-};
-
+}
+module.exports.syncMCRolesForUser = syncMCRolesForUser;
 
 module.exports.writeProtobufUUID = function writeProtobufUUID (uuidUuid) {
 	var buffer = new ArrayBuffer(16); // 16 bytes = 128 bits
@@ -98,4 +94,24 @@ module.exports.writeProtobufUUID = function writeProtobufUUID (uuidUuid) {
 
 module.exports.getUnixTime = function () {
 	return Math.floor(Date.now() / 1000);
+};
+
+module.exports._setBot = function (newBot) {
+	if (bot) {
+		return;
+	}
+
+	bot = newBot;
+
+	const subRedis = redis.newClient();
+	subRedis.on('message', (channel, message) => {
+		getDiscordIDForUser(message)
+		.then(id => {
+			if (id) {
+				return syncMCRolesForUser(id);
+			}
+		})
+		.catch(err => console.error(err));
+	});
+	subRedis.subscribe('playerRankUpdate');
 };
