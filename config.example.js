@@ -15,6 +15,7 @@ module.exports = {
 		superadmin: '202947541598339072',
 		doridian: '202947572090929152',
 	},
+	hashSecret: '[REDACTED]',
 	redis: {
 		host: '127.0.0.1',
 		port: 6379,
