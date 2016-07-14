@@ -14,8 +14,9 @@ const bot = Promise.promisifyAll(new Discord.Client({
 
 bot.loginWithToken(config.botToken);
 bot.on('ready', () => {
-	bot.servers[0].members.forEach(member => {
-		return util.syncMCRolesForUser(member)
-		.catch(err => console.error(err));
+	const server = bot.servers[0];
+	server.members.forEach(member => {
+		return util.syncMCRolesForUser(member, server)
+		.catch(err => console.error(err, err.stack));
 	});
 });
