@@ -17,5 +17,6 @@ bot.on('ready', () => {
 	return Promise.each(bot.servers[0].members, member => {
 		return util.syncMCRolesForUser(member.id, bot)
 		.catch(err => console.error(err, err.stack));
-	});
+	})
+	.then(() => process.exit(0));
 });
