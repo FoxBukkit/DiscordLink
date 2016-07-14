@@ -76,6 +76,10 @@ function syncMCRolesForUser (user, _bot) {
 			rolesToAdd.push(correctDiscordRole);
 		}
 
+		if (rolesToAdd.length < 1 && rolesToRemove.length < 1) {
+			return;
+		}
+
 		return (_bot || bot).manageMemberRolesAsync(user, rolesToAdd, rolesToRemove);
 	});
 }
