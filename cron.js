@@ -12,6 +12,8 @@ const bot = Promise.promisifyAll(new Discord.Client({
 	forceFetchUsers: true,
 }));
 
+util._setBot(bot);
+
 bot.loginWithToken(config.botToken);
 bot.on('ready', () => {
 	const server = bot.servers[0];

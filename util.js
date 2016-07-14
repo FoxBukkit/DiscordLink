@@ -55,11 +55,11 @@ function getMCRoleForUser (user) {
 }
 module.exports.getMCRoleForUser = getMCRoleForUser;
 
-function syncMCRolesForUser (user, server) {
+function syncMCRolesForUser (user) {
 	return getMCRoleForUser(user)
 	.then(redisMCRole => {
 		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
-		const details = (server ? server : bot.servers[0]).detailsOfUser(user);
+		const details = bot.servers[0].detailsOfUser(user);
 
 		const rolesToRemove = [];
 		const rolesToAdd = [];
