@@ -6,11 +6,11 @@ const Discord = require('@doridian/discord.js');
 const redis = require('./redis');
 const util = require('./util');
 
-const bot = Promise.promisifyAll(new Discord.Client(
+const bot = Promise.promisifyAll(new Discord.Client({
 	autoReconnect: true,
 	compress: true,
 	forceFetchUsers: true,
-));
+}));
 
 bot.loginWithToken(config.botToken);
 bot.on('ready', () => {
