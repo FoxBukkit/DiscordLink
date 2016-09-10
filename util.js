@@ -55,12 +55,12 @@ function getMCRoleForUser (user) {
 }
 module.exports.getMCRoleForUser = getMCRoleForUser;
 
-function syncMCRolesForUser (user, _guild) {
+function syncMCRolesForUser (user) {
 	return getMCRoleForUser(user)
 	.then(redisMCRole => {
 		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
 
-		const user = (_guild || guild).members.get(user);
+		const user = guild.members.get(user);
 
 		const roles = user.properties.roles;
 
