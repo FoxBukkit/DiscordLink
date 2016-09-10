@@ -62,8 +62,9 @@ function syncMCRolesForUser (userId) {
 
 		const user = guild.members.get(userId);
 
+		// We already have the valid role if it is "none"
 		let hasInvalidRoles = false;
-		let hasValidRole = false;
+		let hasValidRole = !!correctManagedDiscordRole;
 
 		const rawRoles = user.roles.array();
 		const correctRoles = [];
