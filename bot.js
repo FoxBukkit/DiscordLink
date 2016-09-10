@@ -62,8 +62,6 @@ bot.on('message', message => {
 	.then(() => message.delete(message));
 });
 
-util._setBot(bot);
-
 module.exports = {
 	start () {
 		return new Promise((resolve, reject) => {
@@ -72,6 +70,7 @@ module.exports = {
 		})
 		.then(() => {
 			mainGuild = bot.guilds.get(config.guildId);
+			util._setGuild(mainGuild);
 			module.exports.mainGuild = mainGuild;
 		});
 	},
@@ -83,3 +82,4 @@ module.exports = {
 	},
 	bot: bot,
 };
+

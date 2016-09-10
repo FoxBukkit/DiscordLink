@@ -14,8 +14,9 @@ const bot = new Discord.Client({
 
 bot.login(config.botToken);
 bot.on('ready', () => {
-	return Promise.each(bot.servers[0].members, member => {
-		return util.syncMCRolesForUser(member.id, bot)
+	const guild = bot.guilds.get(config.guildId);
+	return Promise.each(guild.members.array(), member => {
+		return util.syncMCRolesForUser(member.id, bot, guild)
 		.catch(err => console.error(err, err.stack));
 	})
 	.finally(() => process.exit(0));

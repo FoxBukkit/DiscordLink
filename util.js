@@ -13,8 +13,6 @@ for (const i in ROLE_MAPPING) {
 	MANAGED_ROLES[ROLE_MAPPING[i]] = true;
 }
 
-let bot;
-
 module.exports.loadZMQConfig = function loadZMQConfig (config, socket) {
 	config.forEach(function (srv) {
 		switch (srv.mode.toLowerCase()) {
@@ -55,12 +53,11 @@ function getMCRoleForUser (user) {
 }
 module.exports.getMCRoleForUser = getMCRoleForUser;
 
-function syncMCRolesForUser (user, _bot, _guild) {
+function syncMCRolesForUser (user, guild) {
 	return getMCRoleForUser(user)
 	.then(redisMCRole => {
 		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
 
-		let guild = _guild || ((_bot || bot).guilds.get(config.guildId));
 		const user = guild.members.get(user);
 
 		const roles = user.properties.roles;
@@ -95,19 +92,20 @@ module.exports.getUnixTime = function () {
 	return Math.floor(Date.now() / 1000);
 };
 
-module.exports._setBot = function (newBot) {
-	if (bot) {
-		return;
-	}
+let guildSet = false;
 
-	bot = newBot;
+module.exports._setGuild = function (guild) {
+	if (guildSet) {
+		throw new Error('Cannot set guild twice');
+	}
+	guildSet = true;
 
 	const subRedis = redis.newClient();
 	subRedis.on('message', (channel, message) => {
 		getDiscordIDForUser(message)
 		.then(id => {
 			if (id) {
-				return syncMCRolesForUser(id);
+				return syncMCRolesForUser(id, guild);
 			}
 		})
 		.catch(err => console.error(err));
