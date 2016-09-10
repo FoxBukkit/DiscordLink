@@ -64,9 +64,7 @@ function syncMCRolesForUser (userId) {
 
 		// We already have the valid role if it is "none"
 		let hasInvalidRoles = false;
-		let hasValidRole = !!correctManagedDiscordRole;
-
-		console.log(correctManagedDiscordRole);
+		let hasValidRole = !correctManagedDiscordRole;
 
 		const rawRoles = user.roles.array();
 		const correctRoles = [];
