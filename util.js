@@ -58,7 +58,7 @@ module.exports.getMCRoleForUser = getMCRoleForUser;
 function syncMCRolesForUser (userId) {
 	return getMCRoleForUser(userId)
 	.then(redisMCRole => {
-		const correctManagedDiscordRole = [ROLE_MAPPING[redisMCRole]];
+		const correctManagedDiscordRole = ROLE_MAPPING[redisMCRole];
 
 		const user = guild.members.get(userId);
 
@@ -70,6 +70,7 @@ function syncMCRolesForUser (userId) {
 
 		rawRoles.forEach(role => {
 			const roleId = role.id;
+
 			if (!MANAGED_ROLES[roleId]) {
 				correctRoles.push(roleId);
 				return;
