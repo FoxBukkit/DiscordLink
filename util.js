@@ -13,6 +13,8 @@ for (const i in ROLE_MAPPING) {
 	MANAGED_ROLES[ROLE_MAPPING[i]] = true;
 }
 
+let guild;
+
 module.exports.loadZMQConfig = function loadZMQConfig (config, socket) {
 	config.forEach(function (srv) {
 		switch (srv.mode.toLowerCase()) {
@@ -53,12 +55,12 @@ function getMCRoleForUser (user) {
 }
 module.exports.getMCRoleForUser = getMCRoleForUser;
 
-function syncMCRolesForUser (user, guild) {
+function syncMCRolesForUser (user, _guild) {
 	return getMCRoleForUser(user)
 	.then(redisMCRole => {
 		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
 
-		const user = guild.members.get(user);
+		const user = (_guild || guild).members.get(user);
 
 		const roles = user.properties.roles;
 
@@ -92,23 +94,22 @@ module.exports.getUnixTime = function () {
 	return Math.floor(Date.now() / 1000);
 };
 
-let guildSet = false;
-
-module.exports._setGuild = function (guild) {
-	if (guildSet) {
-		throw new Error('Cannot set guild twice');
-	}
-	guildSet = true;
-
-	const subRedis = redis.newClient();
-	subRedis.on('message', (channel, message) => {
-		getDiscordIDForUser(message)
-		.then(id => {
-			if (id) {
-				return syncMCRolesForUser(id, guild);
-			}
-		})
-		.catch(err => console.error(err));
-	});
-	subRedis.subscribe('playerRankUpdate');
+module.exports._setGuild = function (_guild) {
+	guild = _guild;
 };
+
+const subRedis = redis.newClient();
+subRedis.on('message', (channel, message) => {
+	getDiscordIDForUser(message)
+	.then(id => {
+		if (!guild) {
+			return;
+		}
+
+		if (id) {
+			return syncMCRolesForUser(id, guild);
+		}
+	})
+	.catch(err => console.error(err));
+});
+subRedis.subscribe('playerRankUpdate');

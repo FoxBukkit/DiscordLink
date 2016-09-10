@@ -16,7 +16,7 @@ bot.login(config.botToken);
 bot.on('ready', () => {
 	const guild = bot.guilds.get(config.guildId);
 	return Promise.each(guild.members.array(), member => {
-		return util.syncMCRolesForUser(member.id, bot, guild)
+		return util.syncMCRolesForUser(member.id, guild)
 		.catch(err => console.error(err, err.stack));
 	})
 	.finally(() => process.exit(0));
