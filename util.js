@@ -55,32 +55,27 @@ function getMCRoleForUser (user) {
 }
 module.exports.getMCRoleForUser = getMCRoleForUser;
 
-function syncMCRolesForUser (user, _bot) {
+function syncMCRolesForUser (user, _bot, _guild) {
 	return getMCRoleForUser(user)
 	.then(redisMCRole => {
 		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
-		const details = (_bot || bot).servers[0].detailsOfUser(user);
 
-		const rolesToRemove = [];
-		const rolesToAdd = [];
-		let hasCorrectRole = false;
-		details.roles.forEach(role => {
-			if (role.id === correctDiscordRole) {
-				hasCorrectRole = true;
-			} else if(MANAGED_ROLES[role.id]) {
-				rolesToRemove.push(role.id);
+		let guild = _guild || ((_bot || bot).guilds[config.guildId]);
+		const user = guild.members.get(user);
+
+		const roles = user.properties.roles;
+		
+		if (correctDiscordRole) {
+			if (roles.length === 1 && roles[0] === correctDiscordRole) {
+				return;
 			}
-		});
-
-		if (!hasCorrectRole && correctDiscordRole) {
-			rolesToAdd.push(correctDiscordRole);
+			return user.setRoles([correctDiscordRole]);
+		} else {
+			if (roles.length === 0) {
+				return;
+			}
+			return user.setRoles([]);
 		}
-
-		if (rolesToAdd.length < 1 && rolesToRemove.length < 1) {
-			return;
-		}
-
-		return (_bot || bot).manageMemberRolesAsync(user, rolesToAdd, rolesToRemove);
 	});
 }
 module.exports.syncMCRolesForUser = syncMCRolesForUser;

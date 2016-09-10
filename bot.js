@@ -2,17 +2,19 @@
 
 const config = require('./config');
 const Promise = require('bluebird');
-const Discord = require('@doridian/discord.js');
+const Discord = require('discord.js');
 const crypto = require('crypto');
 const redis = require('./redis');
 const util = require('./util');
 
-const bot = Promise.promisifyAll(new Discord.Client({
+const bot = new Discord.Client({
 	autoReconnect: true,
 	compress: true
-}));
+});
 
 let chat;
+
+let mainGuild;
 
 bot.on('message', message => {
 	if (message.author.id === bot.user.id) {
@@ -66,10 +68,14 @@ module.exports = {
 		return new Promise((resolve, reject) => {
 			bot.loginWithToken(config.botToken);
 			bot.on('ready', resolve);
+		})
+		.then(() => {
+			mainGuild = bot.guilds[config.guildId];
+			module.exports.mainGuild = mainGuild;
 		});
 	},
-	sendMessage (channel, message) {
-		return bot.sendMessageAsync(channel, message);
+	sendMessage (channelId, message) {
+		return mainGuild.channels[channelId].sendMessage(message);
 	},
 	setChat (newChat) {
 		chat = newChat;
