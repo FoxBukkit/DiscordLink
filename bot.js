@@ -76,7 +76,7 @@ module.exports = {
 		});
 	},
 	sendMessage (channelId, message) {
-		return mainGuild.channels[channelId].sendMessage(message);
+		return mainGuild.channels.get(channelId).sendMessage(message);
 	},
 	setChat (newChat) {
 		chat = newChat;
