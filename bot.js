@@ -71,7 +71,7 @@ module.exports = {
 			bot.on('ready', resolve);
 		})
 		.then(() => {
-			mainGuild = bot.guilds[config.guildId];
+			mainGuild = bot.guilds.get(config.guildId);
 			module.exports.mainGuild = mainGuild;
 		});
 	},
