@@ -58,24 +58,35 @@ module.exports.getMCRoleForUser = getMCRoleForUser;
 function syncMCRolesForUser (userId) {
 	return getMCRoleForUser(userId)
 	.then(redisMCRole => {
-		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
+		const correctManagedDiscordRole = [ROLE_MAPPING[redisMCRole]];
 
 		const user = guild.members.get(userId);
 
-		const roles = user.roles.array();
+		let hasInvalidRoles = false;
+		let hasValidRole = false;
 
-		console.log(roles.length, roles, correctDiscordRole);
+		const rawRoles = user.roles.array();
+		const correctRoles = [];
 
-		if (correctDiscordRole) {
-			if (roles.length === 1 && roles[0].id === correctDiscordRole) {
+		rawRoles.forEach(role => {
+			const roleId = role.id;
+			if (!MANAGED_ROLES[roleId]) {
+				correctRoles.push(roleId);
 				return;
 			}
-			return user.setRoles([correctDiscordRole]);
-		} else {
-			if (roles.length === 0) {
-				return;
+
+			if (roleId === correctManagedDiscordRole) {
+				hasValidRole = true;
+			} else {
+				hasInvalidRoles = true;
 			}
-			return user.setRoles([]);
+		});
+
+		if (!hasValidRole || hasInvalidRoles) {
+			if (correctManagedDiscordRole) {
+				correctRoles.push(correctManagedDiscordRole);
+			}
+			return user.setRoles(correctRoles);
 		}
 	});
 }
