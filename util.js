@@ -87,7 +87,9 @@ function syncMCRolesForUser (userId) {
 			if (correctManagedDiscordRole) {
 				correctRoles.push(correctManagedDiscordRole);
 			}
-			return user.setRoles(correctRoles);
+
+			console.log(user.id, correctRoles, hasValidRole, hasInvalidRoles);
+			//return user.setRoles(correctRoles);
 		}
 	});
 }
