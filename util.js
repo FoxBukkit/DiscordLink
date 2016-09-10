@@ -64,8 +64,10 @@ function syncMCRolesForUser (userId) {
 
 		const roles = user.roles.array();
 
+		console.log(roles.length, roles[0].id, correctDiscordRole);
+
 		if (correctDiscordRole) {
-			if (roles.length === 1 && roles[0] === correctDiscordRole) {
+			if (roles.length === 1 && roles[0].id === correctDiscordRole) {
 				return;
 			}
 			return user.setRoles([correctDiscordRole]);
