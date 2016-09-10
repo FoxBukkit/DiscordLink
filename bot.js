@@ -66,7 +66,7 @@ util._setBot(bot);
 module.exports = {
 	start () {
 		return new Promise((resolve, reject) => {
-			bot.loginWithToken(config.botToken);
+			bot.login(config.botToken);
 			bot.on('ready', resolve);
 		})
 		.then(() => {
