@@ -23,7 +23,7 @@ bot.on('message', message => {
 
 	let translatedMessage = null;
 
-	if (message.channel instanceof Discord.PMChannel) {
+	if (message.channel instanceof Discord.DMChannel) {
 		if (message.content === '/discordlink') {
 			const hash = crypto.createHash('md5')
 				.update(message.author.id, 'utf8')
