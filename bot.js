@@ -34,7 +34,7 @@ bot.on('message', message => {
 
 			redis.setexAsync('discordlink:key:' + hash, 900, message.author.id)
 			.then(() => 
-				bot.sendMessageAsync(message.channel, 
+				message.reply( 
 					'Please paste this in Minecraft chat: ' +
 					'`/discordlink ' + hash + '`'
 				)
@@ -59,7 +59,7 @@ bot.on('message', message => {
 			return chat.sendMessage(uuid, translatedMessage);
 		}
 	})
-	.then(() => bot.deleteMessageAsync(message));
+	.then(() => message.delete(message));
 });
 
 util._setBot(bot);
