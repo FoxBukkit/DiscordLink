@@ -2,7 +2,7 @@
 
 const config = require('./config');
 const Promise = require('bluebird');
-const Discord = require('@doridian/discord.js');
+const Discord = require('discord.js');
 const redis = require('./redis');
 const util = require('./util');
 
@@ -12,7 +12,7 @@ const bot = new Discord.Client({
 	forceFetchUsers: true,
 });
 
-bot.loginWithToken(config.botToken);
+bot.login(config.botToken);
 bot.on('ready', () => {
 	return Promise.each(bot.servers[0].members, member => {
 		return util.syncMCRolesForUser(member.id, bot)

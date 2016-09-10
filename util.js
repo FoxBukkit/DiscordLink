@@ -60,11 +60,11 @@ function syncMCRolesForUser (user, _bot, _guild) {
 	.then(redisMCRole => {
 		const correctDiscordRole = ROLE_MAPPING[redisMCRole];
 
-		let guild = _guild || ((_bot || bot).guilds[config.guildId]);
+		let guild = _guild || ((_bot || bot).guilds.get(config.guildId));
 		const user = guild.members.get(user);
 
 		const roles = user.properties.roles;
-		
+
 		if (correctDiscordRole) {
 			if (roles.length === 1 && roles[0] === correctDiscordRole) {
 				return;
