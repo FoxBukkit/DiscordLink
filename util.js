@@ -62,7 +62,7 @@ function syncMCRolesForUser (userId) {
 
 		const user = guild.members.get(userId);
 
-		const roles = user.roles;
+		const roles = user.roles.array();
 
 		if (correctDiscordRole) {
 			if (roles.length === 1 && roles[0] === correctDiscordRole) {
