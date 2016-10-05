@@ -123,7 +123,7 @@ subRedis.on('message', (channel, message) => {
 		}
 
 		if (id) {
-			return syncMCRolesForUser(id, guild);
+			return syncMCRolesForUser(id);
 		}
 	})
 	.catch(err => console.error(err));
